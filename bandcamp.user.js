@@ -7,40 +7,18 @@
 // ==/UserScript==
 
 // grab Bandcamp data
-var albumData = TralbumData;
-var embedData = EmbedData;
+var scriptTags = document.getElementsByTagName("script");
+for (var index = 0; index < scriptTags.length; index++) {
+  var temp = scriptTags[index].getAttribute("data-tralbum");
+  if ((null != temp) && ("" != temp)) {
+    albumData = JSON.parse(temp);
 
-// grab album name - optional
-var albumName = "";
-if ((embedData != undefined) &&
-    (embedData.album_title != undefined) &&
-    (embedData.artist != undefined)) {
-  albumName = embedData.artist + ": " + embedData.album_title;
-}
-
-// generate download output
-if ((albumData != undefined) &&
-    (albumData.trackinfo != undefined) &&
-    (albumData.trackinfo.length > 0)) {
-  var newText = "";
-
-  newText += "<html>";
-  newText += "<head>";
-  newText += "<title>" + albumName + "</title>";
-  newText += "</head>";
-  newText += "<body>";
-  newText += "<h1>" + albumName + "</h1>";
-
-  var item = null;
-  for (var index = 0; index < albumData.trackinfo.length; index++) {
-    item = albumData.trackinfo[index];
-
-    newText += "<a href='https://" + item["file"]["mp3-128"] + "'>" + item["title"] + "</a> (" + item["duration"] + " seconds)<br/>";
+    // log the MP3 file paths to the console
+    if (undefined != albumData.trackinfo) {
+      for (var index = 0; index < albumData.trackinfo.length; index++) {
+        console.log("%c"+albumData.trackinfo[index]["file"]["mp3-128"],
+                    "background: #2BAE66FF; color: #FCF6F5FF; font-weight: bold;");
+      }
+    }
   }
-
-  newText += "</body>";
-  newText += "</html>";
-
-  var newWindow = window.open("data:text/html;charset=UTF-8," + newText);
 }
-
